@@ -22,13 +22,17 @@ public class UserService {
     /**
      * Adds a new user to the service.
      * @param user The User object to add.
-     */
+        */
     public void addUser(User user) {
-        if (user != null) {
-            users.add(user);
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
         }
+        // Optional: Check for duplicate IDs
+        if (findUserById(user.getId()).isPresent()) {
+            throw new IllegalArgumentException("User with ID " + user.getId() + " already exists");
+        }
+        users.add(user);
     }
-
     /**
      * Retrieves all users currently in the service.
      * @return A List of all User objects.
