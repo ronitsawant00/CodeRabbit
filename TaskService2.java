@@ -13,10 +13,9 @@ public class TaskService2 {
 
     private final TaskRepository taskRepository;
 
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService2(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
     }
-
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
     }
@@ -31,28 +30,29 @@ public class TaskService2 {
     }
 
     public Task updateTask(Long id, Task taskDetails) {
+    public Task updateTask(Long id, Task taskDetails) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + id));
 
-        // --- Coderabbit might flag this section for improvement or potential bug ---
-        // Potential Coderabbit comment: "Consider using Optional.ofNullable for taskDetails.getTitle() to prevent NullPointerException if taskDetails is partially null."
-        // Coderabbit comment: "Directly accessing taskDetails.getTitle() without null check can lead to NullPointerException if DTO fields are not validated or can be null."
-        if (taskDetails.getTitle() != null && !taskDetails.getTitle().isEmpty()) { // Coderabbit might suggest simplification
-            task.setTitle(taskDetails.getTitle());
+        if (taskDetails == null) {
+            throw new IllegalArgumentException("taskDetails must not be null");
         }
-        // Coderabbit comment: "This condition is redundant if @NotBlank or @NotNull are used effectively in TaskDTO. Consider removing or refining."
+
+        String title = taskDetails.getTitle();
+        if (title != null && !title.trim().isEmpty()) {
+            task.setTitle(title.trim());
+        }
+
         if (taskDetails.getDescription() != null) {
             task.setDescription(taskDetails.getDescription());
         }
 
-        // Coderabbit comment: "Ensure status update logic handles all valid TaskStatus enums gracefully."
-        task.setStatus(taskDetails.getStatus());
-        // --- End of potential Coderabbit feedback area ---
+        if (taskDetails.getStatus() != null) {
+            task.setStatus(taskDetails.getStatus());
+        }
 
         return taskRepository.save(task);
-    }
-
-    public void deleteTask(Long id) {
+    }    public void deleteTask(Long id) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + id));
         taskRepository.delete(task);
