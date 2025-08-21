@@ -1,0 +1,20 @@
+name: Check PR using Sourcery
+
+on:
+  pull_request:
+
+jobs:
+  review-with-sourcery:
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          # This is necessary because Sourcery needs to compare with the base branch
+          fetch-depth: 0 
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - uses: sourcery-ai/action@v1
+        with:
+          token: ${{ user_uy8wrcSRz3kYhM58ZHE4VTShr7LCLs5fNIHkSRl2SIhMDHvsBgzmzyy_y_o }}
+          # Tell Sourcery to only review the changes in the pull request
+          diff_ref: ${{ github.event.pull_request.base.sha }}
