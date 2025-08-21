@@ -15,6 +15,6 @@ jobs:
           python-version: '3.11'
       - uses: sourcery-ai/action@v1
         with:
-          token: ${{ user_uy8wrcSRz3kYhM58ZHE4VTShr7LCLs5fNIHkSRl2SIhMDHvsBgzmzyy_y_o }}
+          token: ${{ secrets.SOURCERY_TOKEN }}
           # Tell Sourcery to only review the changes in the pull request
           diff_ref: ${{ github.event.pull_request.base.sha }}
