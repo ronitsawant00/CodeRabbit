@@ -1,5 +1,9 @@
 
-import json, os, datetime
+import os
+
+DB_FILE = "data.json"
+
+
 
 DB_FILE = "data.json"
 
@@ -9,10 +13,14 @@ def add_expense(amount, category):
             expenses=json.load(f)
     else:
         expenses=[]
-    expenses.append({"amount": float(amount), "category": category, "date": str(datetime.date.today())})
-    with open(DB_FILE,"w") as f:
-        json.dump(expenses,f)
+        expenses.append({"amount": float(amount), "category": category, "date": str(datetime.date.today())})
+    tmp_file = DB_FILE + ".tmp"
+    with open(tmp_file, "w") as f:
+        json.dump(expenses, f)
+    os.replace(tmp_file, DB_FILE)
     print("Expense added!")
+
+
 
 def get_total():
     if os.path.exists(DB_FILE):
@@ -51,15 +59,25 @@ def get_by_category(cat):
 if __name__=="__main__":
     while True:
         print("1.Add Expense\n2.View Total\n3.View by Category\n4.Exit")
-        ch=int(input("Enter choice:"))
-        if ch==1:
-            amt=int(input("Amount:"))
-            cat=input("Category:")
-            add_expense(amt,cat)
-        elif ch==2:
-            print("Total:",get_total())
-        elif ch==3:
-            c=input("Enter category:")
+        try:
+            ch = int(input("Enter choice:"))
+        except ValueError:
+            print("Invalid input. Please enter a number between 1 and 4.")
+            continue
+        if ch == 1:
+            try:
+                amt = float(input("Amount:"))
+            except ValueError:
+                print("Invalid amount. Please enter a valid number.")
+                continue
+            cat = input("Category:")
+            add_expense(amt, cat)
+        elif ch == 2:
+            print("Total:", get_total())
+        elif ch == 3:
+            c = input("Enter category:")
             print(get_by_category(c))
-        else:
+        elif ch == 4:
             break
+        else:
+            print("Invalid choice. Please enter a number between 1 and 4.")
